@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+
+<html lang="en-US">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>marble</title>
+  <script src="../../jsgame0.js"></script>
+  <style type="text/css" media="screen">
+body {
+  background-color: white;
+  color: black;
+}
+.hidden {
+  display: none;
+}
+#original {
+  margin-left: 1em;
+}
+  </style>
+</head>
+
+<body>
+<section id="imageLoader" class="hidden">
+  <img class="hidden" src="images/height45.png" alt="height45">
+  <img class="hidden" src="images/map.png" alt="map">
+  <img class="hidden" src="images/marble.png" alt="marble">
+  <img class="hidden" src="images/overlay.png" alt="overlay">
+</section>
+
+<main>
+<h1>marble</h1>
+
+<canvas id="screen">
+The game screen appears here if your browser supports the Canvas API.
+</canvas>
+<section id="controls">
+  <button type="button" id="reset">Reset</button>
+  <button type="button" id="pause">Pause</button>
+</section>
+
+<h2>Attribution</h2>
+
+<p><a href="https://wireframe.raspberrypi.org/issues/34">Code a Marble Madness homage, pages 40-41, by Mark Vanstone</a>.</p>
+
+<p>Licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/legalcode">Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported</a>.</p>
+
+<h2>Original Python code</h2>
+
+<pre id="original"><code>
+# Marble Madness
+from pygame import image
+
+HEIGHT = 570
+WIDTH = 600
+gameState = 0
+marble = Actor(&#x27;marble&#x27;, center=(300, 45))
+marbleh = Actor(&#x27;marble&#x27;, center=(300, 60))
+marble.dir = marble.speed = 0
+heightmap = image.load(&#x27;images/height45.png&#x27;)
+debug = False
+
+def draw():
+    if(debug):
+        screen.blit(&quot;height45&quot;, (0, 0))
+        marbleh.draw()
+    else:
+        screen.blit(&quot;map&quot;, (0, 0))
+        if gameState == 0:
+            marble.draw()
+        else:
+            if gameState == 2:
+                screen.draw.text(&quot;YOU WIN!&quot;, center = (300, 300), owidth=0.5, ocolor=(255,255,255), color=(0,0,255) , fontsize=80)
+                marble.draw()
+            else:
+                screen.draw.text(&quot;GAME OVER!&quot;, center = (300, 300), owidth=0.5, ocolor=(255,255,255), color=(0,0,255) , fontsize=80)
+        screen.blit(&quot;overlay&quot;, (0, 0))
+
+def update():
+    if gameState == 0:
+        if keyboard.left:
+            marble.dir = max(marble.dir-0.1,-1)
+            marble.speed = min(1,marble.speed + 0.1)
+        if keyboard.right:
+            marble.dir = min(marble.dir+0.1,1)
+            marble.speed = min(1,marble.speed + 0.1)
+        moveMarble()
+        marble.speed = max(0,marble.speed - 0.01)
+
+def moveMarble():
+    global gameState
+    ccol = getHeight(marbleh.x,marbleh.y)
+    lcol = getHeight(marbleh.x-10,marbleh.y+10)
+    rcol = getHeight(marbleh.x+10,marbleh.y+10)
+    if ccol.r == 0:
+        gameState = 1
+    if (lcol.r &lt; ccol.r or rcol.r &lt; ccol.r):
+        marble.y += marble.speed
+        marble.speed += 0.03
+    marbleh.x += marble.speed*marble.dir
+    marbleh.y += marble.speed
+    marble.x = marbleh.x
+    marble.y = (marbleh.y*0.6)+((255-ccol.r)*1.25)
+    marble.angle = marble.angle + marble.speed*marble.dir*-10
+    if marble.angle &gt; 0 : marble.angle = -50
+    if marble.angle &lt; -50 : marble.angle = 0
+    if marbleh.y &gt; 610: gameState = 2
+
+def getHeight(x,y):
+    return heightmap.get_at((int(x),int(y)))
+
+
+</code></pre>
+</main>
+
+<script>
+// Marble Madness
+HEIGHT = 671;
+WIDTH = 600;
+const debug = false;
+
+var gameState, marble, marbleh, heightmap;
+
+function reset() {
+  gameState = 0;
+  marble = new Actor('marble');
+  marble.center = [300, 45];
+  marble.dir = 0;
+  marble.speed = 0;
+  marbleh = new Actor('marble');
+  marbleh.center = [300, 60];
+
+  screen.blit("height45", [0, 0]);
+  heightmap = screen.getSurface();
+  screen.clear();
+}
+
+function draw() {
+  if (debug) {
+    screen.blit("height45", [0, 0]);
+    marbleh.draw();
+  }
+  else {
+    screen.blit("map", [0, 0]);
+    if (gameState === 0) {
+      marble.draw();
+    }
+    else {
+      if (gameState === 2) {
+        screen.draw.text("YOU WIN!", {
+          center: [300, 300],
+          owidth: 0.5,
+          ocolor: [255, 255, 255],
+          color: [0, 0, 255],
+          fontsize: 80
+        });
+        marble.draw();
+      }
+      else {
+        screen.draw.text("GAME OVER!", {
+          center: [300, 300],
+          owidth: 0.5,
+          ocolor: [255, 255, 255],
+          color: [0, 0, 255],
+          fontsize: 80
+        });
+      }
+    }
+    screen.blit("overlay", [0, 0]);
+  }
+}
+
+function update() {
+  if (gameState === 0) {
+    if (keyboard[keys.LEFT]) {
+      marble.dir = Math.max(marble.dir - 0.1, -1);
+      marble.speed = Math.min(1, marble.speed + 0.1);
+    }
+    if (keyboard[keys.RIGHT]) {
+      marble.dir = Math.min(marble.dir + 0.1, 1);
+      marble.speed = Math.min(1, marble.speed + 0.1);
+    }
+    moveMarble();
+    marble.speed = Math.max(0, marble.speed - 0.01);
+  }
+}
+
+function moveMarble() {
+  let ccol = getHeight(marbleh.posx, marbleh.posy),
+      lcol = getHeight(marbleh.posx - 10, marbleh.posy + 10),
+      rcol = getHeight(marbleh.posx + 10, marbleh.posy + 10);
+  if (ccol[0] === 0) {
+    gameState = 1;
+  }
+  if ((lcol[0] < ccol[0]) || (rcol[0] < ccol[0])) {
+    marble.posy += marble.speed;
+    marble.speed += 0.03;
+  }
+  marbleh.posx += marble.speed * marble.dir;
+  marbleh.posy += marble.speed;
+  marble.posx = marbleh.posx;
+  marble.posy = (marbleh.posy * 0.6) + ((255 - ccol[0]) * 1.25);
+  marble.angle = marble.angle + (marble.speed * marble.dir * -10);
+  if (marble.angle > 0) {
+    marble.angle = -50;
+  }
+  if (marble.angle < -50) {
+    marble.angle = 0;
+  }
+  if (marbleh.posy > 610) {
+    gameState = 2;
+  }
+}
+
+function getHeight(x, y) {
+  return heightmap.getAt(Math.trunc(x), Math.trunc(y));
+}
+
+window.addEventListener('load', (event) => {
+  images.LOAD('#imageLoader img');
+  // Non-standard order for Surface
+  screen.set_mode('#screen', '#reset', '#pause');
+  reset();
+  screen.draw.playButton();
+});
+</script>
+</body>
+
+</html>
