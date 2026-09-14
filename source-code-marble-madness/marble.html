@@ -117,7 +117,7 @@ def getHeight(x,y):
 
 <script>
 // Marble Madness
-HEIGHT = 671;
+HEIGHT = 570;
 WIDTH = 600;
 const debug = false;
 
@@ -132,9 +132,7 @@ function reset() {
   marbleh = new Actor('marble');
   marbleh.center = [300, 60];
 
-  screen.blit("height45", [0, 0]);
-  heightmap = screen.getSurface();
-  screen.clear();
+  heightmap = Surface.fromImage("height45");
 }
 
 function draw() {
